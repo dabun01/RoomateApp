@@ -26,14 +26,17 @@ struct ProfileView: View {
                 .frame(width: 300, height: 300)
             Text("\(users[0].name)")
                 .font(.largeTitle)
-            
-            Text("Settings")
-            Text("Username: \(users[0].name)")
-            Text("Notifications")
-            Toggle(isOn: $notifications) {
-                Text("Notifications")
+            NavigationStack{
+                Form{
+                    Text("Settings")
+                    Text("Username: \(users[0].name)")
+                    Text("Notifications")
+                    Toggle(isOn: $notifications) {
+                        Text("Notifications")
+                    }
+                    
+                }
             }
-            
         }
         .padding()
     }

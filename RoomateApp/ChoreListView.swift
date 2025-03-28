@@ -77,7 +77,7 @@ struct ChoreListView: View {
                     }
                 }
             }
-            .navigationTitle("Chores")
+            .navigationTitle("Your Chores")
             .toolbar {
                 EditButton()
             }

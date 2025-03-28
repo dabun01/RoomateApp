@@ -35,6 +35,8 @@ let users: [User] = [
 ]
 
 struct ContentView: View {
+    @State private var showProfileSettings: Bool = false
+    
     var body: some View {
         
         VStack(alignment: .leading) {
@@ -44,11 +46,17 @@ struct ContentView: View {
                     .fontWeight(.bold)
                     .padding()
                 Spacer()
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 40, height: 40)
-                    .foregroundColor(.blue)
-                    .padding()
+                Button(action: {
+                    showProfileSettings.toggle()
+                }) {
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.blue)
+                        .padding()
+                }
+            }.sheet(isPresented: $showProfileSettings){
+                ProfileView()
             }
             
             HStack(spacing: 30){
