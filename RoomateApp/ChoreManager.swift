@@ -8,11 +8,12 @@
 import Foundation
 
 // Define the Chore structure
-struct Chore: Identifiable {
+struct Chore: Identifiable, Codable {
     var id = UUID()
     var title: String
     var isCompleted: Bool = false
     var dueDate: Date?
+    var points: Int
     
     // Method to toggle completion status
     mutating func toggleCompletion() {
@@ -21,13 +22,30 @@ struct Chore: Identifiable {
 }
 
 // Class to manage the chores list
+@Observable
 class ChoreManager {
     // Mutable array of chores
-    private(set) var chores: [Chore] = []
+    var chores = [Chore](){
+        didSet{
+            if let encode = try? JSONEncoder().encode(chores){
+                UserDefaults.standard.set(encode, forKey: "chores")
+            }
+        }
+    }
+    
+    init() {
+        if let savedChore = UserDefaults.standard.data(forKey: "chores"){
+            if let decodedChore = try? JSONDecoder().decode([Chore].self, from: savedChore){
+                chores = decodedChore
+                return
+            }
+        }
+        chores = []
+    }
     
     // Add a new chore to the list
     func addChore(title: String, dueDate: Date? = nil) {
-        let newChore = Chore(title: title, isCompleted: false, dueDate: dueDate)
+        let newChore = Chore(title: title, isCompleted: false, dueDate: dueDate, points: 10)
         chores.append(newChore)
     }
     
@@ -35,27 +53,6 @@ class ChoreManager {
     func removeChore(id: UUID) {
         if let index = chores.firstIndex(where: { $0.id == id }) {
             chores.remove(at: index)
-        }
-    }
-    
-    // Update an existing chore
-    func updateChore(id: UUID, newTitle: String? = nil, isCompleted: Bool? = nil, dueDate: Date? = nil) {
-        if let index = chores.firstIndex(where: { $0.id == id }) {
-            var updatedChore = chores[index]
-            
-            if let newTitle = newTitle {
-                updatedChore.title = newTitle
-            }
-            
-            if let isCompleted = isCompleted {
-                updatedChore.isCompleted = isCompleted
-            }
-            
-            if let dueDate = dueDate {
-                updatedChore.dueDate = dueDate
-            }
-            
-            chores[index] = updatedChore
         }
     }
     
