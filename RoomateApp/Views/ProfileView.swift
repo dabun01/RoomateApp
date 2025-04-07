@@ -21,11 +21,14 @@ struct ProfileView: View {
     
     var body: some View {
         VStack{
-            Image("profilePicture")
-                .resizable()
-                .frame(width: 300, height: 300)
-            Text("\(users[0].name)")
-                .font(.largeTitle)
+            VStack {
+                Image("profilePicture")
+                    .resizable()
+                    .frame(width: 300, height: 300)
+                Text("\(users[0].name)")
+                    .font(.largeTitle)
+            }
+
             NavigationStack{
                 Form{
                     Text("Settings")
@@ -37,6 +40,9 @@ struct ProfileView: View {
                     
                 }
             }
+            .navigationTitle("User Options")
+
+
         }
         .padding()
     }
