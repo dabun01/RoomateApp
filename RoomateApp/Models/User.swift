@@ -2,7 +2,7 @@
 //  User.swift
 //  RoomateApp
 //
-//  Created by David Abundis on 4/10/25.
+//  Created by David Abundis & Christopher Nastasi on 4/10/25.
 //
 
 import Foundation
@@ -12,6 +12,7 @@ import UIKit
 struct User: Hashable, Codable {
     // Properties
     var name: String
+    var email: String?
     var profilePicture: String?
     var points: Int = nil as Int? ?? 0
     

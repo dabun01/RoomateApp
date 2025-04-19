@@ -2,82 +2,100 @@
 //  ContentView.swift
 //  RoomateApp
 //
-//  Created by David Abundis on 3/11/25.
+//  Created by David Abundis & Chris Nastasi on 3/11/25.
 //
 
 // Scoring system for doing chores
 
 import SwiftUI
 
-import UIKit
-
-
 struct ContentView: View {
     @State private var showProfileSettings: Bool = false
     @State var currentUser = users[0]
-    
+    @State var isLoggedIn: Bool = false
+
     var body: some View {
-        // Title and navbar
-        NavigationStack{
-            HStack(){
-                Text ("Responsible Roomies")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding()
-                Spacer()
-                Button(action: {
-                    showProfileSettings.toggle()
-                }) {
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.blue)
-                        .padding()
-                }
-            }
-            .background(Color.gray.opacity(0.1))
-            .sheet(isPresented: $showProfileSettings){
-                ProfileView()
-            }
-            VStack(){
-                HStack() {
-                    Text ("Welcome \(currentUser.name)")
+        NavigationStack {
+            VStack(spacing: 20) {
+                // Title and navbar
+                HStack {
+                    Text("Responsible Roomies")
                         .font(.title)
-                        .fontWeight(.medium)
-                        .padding()
+                        .fontWeight(.bold)
+                        .padding(.leading)
                     Spacer()
-                    Text("\(currentUser.points)pts")
-                        .font(.title)
-                        .fontWeight(.medium)
-                        .padding()
-                }
-                ChoreListView()
-                Text("Your Roomies")
-                    .font(.title)
-                    .fontWeight(.medium)
-                HStack(spacing: 30){
-                    ForEach(users, id: \.name) { user in
-                        UserRow(user: user)
+                    Button(action: {
+                        showProfileSettings.toggle()
+                    }) {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.blue)
+                            .padding(.trailing)
                     }
                 }
-                .padding()
-                .background(.regularMaterial)
-                .clipShape(.rect)
-                .background(Color.blue)
-                .frame(maxHeight: 150)
+                .sheet(isPresented: $showProfileSettings) {
+                    if isLoggedIn {
+                        ProfileView()
+                    } else {
+                        LoginView()
+                    }
+                }
+
+                // Welcome and points
+                VStack(spacing: 10) {
+                    HStack {
+                        Text("Welcome \(currentUser.name)")
+                            .font(.title2)
+                            .fontWeight(.medium)
+                        Spacer()
+                        Text("\(currentUser.points) pts")
+                            .font(.title2)
+                            .fontWeight(.medium)
+                    }
+                    .padding(.horizontal)
+                }
+
+                // Chore list
+                ScrollView {
+                    ChoreListView()
+                }
+                .padding(.horizontal)
+
+                // Roomies section
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Your Roomies")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .padding(.horizontal)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 20) {
+                            ForEach(users, id: \.name) { user in
+                                UserRow(user: user)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+                .padding(.vertical)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(12)
+                .padding(.horizontal)
             }
+            .padding(.top)
+            .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color.blue.opacity(0.2)]), startPoint: .top, endPoint: .bottom))
         }
     }
 }
 
-
 struct UserRow: View {
     let user: User
-    
+
     var body: some View {
         VStack {
-            if user.profilePicture != nil {
-                Image("\(user.profilePicture!)")
+            if let profilePicture = user.profilePicture {
+                Image(profilePicture)
                     .resizable()
                     .frame(width: 60, height: 60)
                     .clipShape(Circle())
@@ -91,11 +109,12 @@ struct UserRow: View {
                     .frame(width: 60, height: 60)
                     .foregroundColor(.gray)
             }
-            
+
             Text(user.name)
                 .font(.headline)
-            Text("\(user.points)pts")
-            
+            Text("\(user.points) pts")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
         }
         .padding(.vertical, 8)
     }

@@ -2,7 +2,7 @@
 //  ProfileView.swift
 //  RoomateApp
 //
-//  Created by David Abundis on 3/13/25.
+//  Created by David Abundis & Chris Nastasi on 3/13/25.
 //
 
 import SwiftUI
