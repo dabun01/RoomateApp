@@ -11,32 +11,10 @@ import SwiftUI
 
 import UIKit
 
-struct User {
-    // Properties
-    var name: String
-    var profilePicture: UIImage?
-    var points: Int = 0
-    
-    // Method to update profile picture
-    mutating func updateProfilePicture(newImage: UIImage) {
-        self.profilePicture = newImage
-    }
-    
-    // Method to get user display info
-    func getDisplayInfo() -> String {
-        return "User: \(name)"
-    }
-}
-
-let users: [User] = [
-    User(name: "David", profilePicture: UIImage(named: "profilePicture"), points: 25),
-    User(name: "Chris", profilePicture: nil, points: 30),
-    User(name: "Ruben", profilePicture: UIImage(named: "profilePicture"), points: -10),
-    User(name: "Manny", profilePicture: UIImage(named: "profilePicture"), points: 20)
-]
 
 struct ContentView: View {
     @State private var showProfileSettings: Bool = false
+    @State var currentUser = users[0]
     
     var body: some View {
         // Title and navbar
@@ -63,26 +41,16 @@ struct ContentView: View {
             }
             VStack(){
                 HStack() {
-                    Text ("Welcome \(users[0].name)")
+                    Text ("Welcome \(currentUser.name)")
                         .font(.title)
                         .fontWeight(.medium)
                         .padding()
                     Spacer()
-                    Text("\(users[0].points)pts")
+                    Text("\(currentUser.points)pts")
                         .font(.title)
                         .fontWeight(.medium)
                         .padding()
                 }
-//                List{
-//                    Section("Your Chores"){
-//                        Text("Dishes")
-//                        Text("Laundry")
-//                        Text("Vacuuming")
-//                        Text("Cleaning bathrooms")
-//                        Text("Taking out the trash")
-//                    }
-//                }
-//                .frame(maxHeight: 350)
                 ChoreListView()
                 Text("Your Roomies")
                     .font(.title)
@@ -108,11 +76,15 @@ struct UserRow: View {
     
     var body: some View {
         VStack {
-            if let profileImage = user.profilePicture {
-                Image(uiImage: profileImage)
+            if user.profilePicture != nil {
+                Image("\(user.profilePicture!)")
                     .resizable()
                     .frame(width: 60, height: 60)
                     .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(Color.black, lineWidth: 2)
+                    )
             } else {
                 Image(systemName: "person.circle.fill")
                     .resizable()
