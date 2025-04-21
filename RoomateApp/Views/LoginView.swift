@@ -88,23 +88,6 @@ struct LoginView: View {
             } else {
                 errorMessage = ""
                 // Perform login
-//                async {
-//                    do {
-//                        // Simulate network call
-//                        try await Task.sleep(nanoseconds: 1_000_000_000)
-//                        // Perform login action
-//                        print("Logged in with email: \(email)")
-//                    } catch {
-//                        errorMessage = "Login failed. Please try again."
-//                    }
-//
-//                    // Handle successful login
-//                    print("Login successful!")
-                    // Navigate to the main app view
-                    // For example: navigate to the main app view
-//                    NavigationStack.push(MainAppView())
-                    // Or use a state variable to control the navigation
-
             }
         } else {
             // Handle sign-up logic

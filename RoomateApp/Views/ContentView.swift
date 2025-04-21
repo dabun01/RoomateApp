@@ -45,7 +45,7 @@ struct ContentView: View {
                 // Welcome and points
                 VStack(spacing: 10) {
                     HStack {
-                        Text("Welcome \(currentUser.name)")
+                        Text("Welcome, \(currentUser.name)!")
                             .font(.title2)
                             .fontWeight(.medium)
                         Spacer()
@@ -55,12 +55,10 @@ struct ContentView: View {
                     }
                     .padding(.horizontal)
                 }
-
                 // Chore list
                 ScrollView {
                     ChoreListView()
                 }
-                .padding(.horizontal)
 
                 // Roomies section
                 VStack(alignment: .leading, spacing: 10) {

@@ -22,6 +22,7 @@ struct User: Hashable, Codable {
     }
 }
 
+// test cases
 let users: [User] = [
     User(name: "David", profilePicture: "profilePicture"),
     User(name: "Chris", profilePicture: "imageDog"),
