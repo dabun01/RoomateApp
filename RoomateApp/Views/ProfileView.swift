@@ -7,6 +7,15 @@
 
 import SwiftUI
 
+struct VLine: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+        }
+    }
+}
+
 struct ProfileView: View {
     let backgroundGradient = LinearGradient(
         colors: [Color.green, Color.purple],
@@ -30,15 +39,10 @@ struct ProfileView: View {
                             .font(.largeTitle)
                             .foregroundStyle(Color.white)
                     }
-                    Rectangle()
-                            .fill(Color.white)
-                            .frame(width: 10)
-                            .padding(.vertical, 10)
-                            .overlay(
-                                Rectangle()
-                                    .stroke(style: StrokeStyle(lineWidth: 1, dash: [1]))
-                                    .foregroundColor(.white)
-                            )
+                    VLine().stroke(style: StrokeStyle(lineWidth: 2, dash: [5]))
+                        .frame(width: 1, height: 180)
+                        .foregroundStyle(Color.white)
+                        .padding(.vertical)
                     
                     VStack{
                         Text("\(currentUser.points)")

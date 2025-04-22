@@ -9,14 +9,17 @@ import SwiftUI
 
 struct ChoreListView: View {
     @State private var completedItems: [String: Bool] = [:]
-    let chores = ["Do the dishes", "Take out the trash", "Vacuum the living room", "Laundry"]
-    let names = ["David", "Chris", "Ruben", "You"]
-    let points = [10, 20, 15, 25]
-
+    @State private var isPresentingAddChore: Bool = false
+    let chores = ["Do the dishes", "Take out the trash", "Vacuum the living room", "Laundry", "Clean the bathroom"]
+    let names = ["David", "Chris", "Ruben", "You", "You"]
+    let points = [10, 20, 15, 25, 10]
+    var onChoreCompleted: (Int) -> Void
+    
     var body: some View {
         NavigationView {
-            List(Array(zip(chores.indices, zip(chores, names)))
-                .filter { $0.1.1 == "You" }, id: \.0) { index, pair in
+            let filteredChores = Array(zip(chores.indices, zip(chores, names)))
+                            .filter { $0.1.1 == "You" }
+            List(filteredChores, id: \.0) { index, pair in
                 let (chore, name) = pair
                 HStack {
                     VStack(alignment: .leading) {
@@ -30,7 +33,13 @@ struct ChoreListView: View {
                     }
                     Spacer()
                     Button(action: {
-                        completedItems[chore] = !(completedItems[chore] ?? false)
+                        if completedItems[chore] == true {
+                            completedItems[chore] = false
+                            onChoreCompleted(-points[index])// Subtract points
+                        } else {
+                            completedItems[chore] = true
+                            onChoreCompleted(points[index])// Add points to user
+                        }
                     }) {
                         Text(completedItems[chore] ?? false ? "Complete" : "Incomplete")
                             .font(.caption)
@@ -47,5 +56,7 @@ struct ChoreListView: View {
 }
 
 #Preview {
-    ChoreListView()
+    ChoreListView(onChoreCompleted: { points in
+        print("Chore completed! Points awarded: \(points)")
+    })
 }

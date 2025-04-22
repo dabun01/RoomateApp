@@ -5,7 +5,6 @@
 //  Created by David Abundis & Chris Nastasi on 3/11/25.
 //
 
-// Scoring system for doing chores
 
 import SwiftUI
 
@@ -57,18 +56,18 @@ struct ContentView: View {
                 }
                 // Chore list
                 ScrollView {
-                    ChoreListView()
+                    ChoreListView(onChoreCompleted: completeChore)
                 }
 
                 // Roomies section
-                VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 5) {
                     Text("Your Roomies")
                         .font(.title2)
                         .fontWeight(.medium)
                         .padding(.horizontal)
 
                     ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: 20) {
+                        LazyHStack(spacing: 10) {
                             ForEach(users, id: \.name) { user in
                                 UserRow(user: user)
                             }
@@ -76,17 +75,22 @@ struct ContentView: View {
                         .padding(.horizontal)
                     }
                 }
-                .padding(.vertical)
+                .padding(.vertical, 20)
                 .background(Color.blue.opacity(0.1))
                 .cornerRadius(12)
                 .padding(.horizontal)
             }
-            .padding(.top)
+            .padding(.vertical)
             .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color.blue.opacity(0.2)]), startPoint: .top, endPoint: .bottom))
         }
     }
-}
+    func completeChore(points: Int) {
+            currentUser.points += points
+        }
+    }
 
+    
+    
 struct UserRow: View {
     let user: User
 
@@ -95,16 +99,16 @@ struct UserRow: View {
             if let profilePicture = user.profilePicture {
                 Image(profilePicture)
                     .resizable()
-                    .frame(width: 60, height: 60)
+                    .frame(width: 80, height: 80)
                     .clipShape(Circle())
                     .overlay(
                         Circle()
-                            .stroke(Color.black, lineWidth: 2)
+                            .stroke(Color(user.getColor(from: user.color ?? "blue")), lineWidth: 3)
                     )
             } else {
                 Image(systemName: "person.circle.fill")
                     .resizable()
-                    .frame(width: 60, height: 60)
+                    .frame(width: 80, height: 80)
                     .foregroundColor(.gray)
             }
 
@@ -114,10 +118,9 @@ struct UserRow: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
-        .padding(.vertical, 8)
+        .padding()
     }
 }
-
 #Preview {
     ContentView()
 }
