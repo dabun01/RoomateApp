@@ -17,6 +17,15 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
+                Image("logo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 350, height: 100)
+                Text("Responsible Roomies")
+                    .font(.title)
+                    .foregroundStyle(.black)
+                    .fontDesign(.monospaced)
+                    .padding(.horizontal)
                 // Toggle between Login and Sign-Up
                 Picker(selection: $isLoginMode, label: Text("Mode")) {
                     Text("Login").tag(true)
@@ -64,7 +73,6 @@ struct LoginView: View {
                         .cornerRadius(8)
                 }
                 .padding(.top)
-
                 Spacer()
             }
             .padding()

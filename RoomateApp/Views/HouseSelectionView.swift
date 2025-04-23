@@ -14,45 +14,56 @@ struct HouseholdSelectionView: View {
     @State private var household: Household?
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Welcome!")
-                .font(.largeTitle)
-                .padding()
-
-            if isJoiningExisting {
-                TextField("Enter Household Name", text: $householdName)
+        NavigationStack{
+            VStack(spacing: 20) {
+                Text("Welcome!")
+                    .font(.largeTitle)
                     .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8)
-                Button("Join Household") {
-                    joinHousehold()
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(8)
-            } else {
-                TextField("Create New Household Name", text: $householdName)
+                
+                if isJoiningExisting {
+                    TextField("Enter Household Name", text: $householdName)
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+                    Button("Join Household") {
+                        joinHousehold()
+                    }
+                    .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.gray.opacity(0.2))
+                    .background(Color.blue)
+                    .foregroundColor(.white)
                     .cornerRadius(8)
-                Button("Create Household") {
-                    createHousehold()
+                } else {
+                    TextField("Create New Household Name", text: $householdName)
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+                    Button("Create Household") {
+                        createHousehold()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.green)
-                .foregroundColor(.white)
-                .cornerRadius(8)
+                
+                Button(isJoiningExisting ? "Switch to Create" : "Switch to Join") {
+                    isJoiningExisting.toggle()
+                }
+                .foregroundColor(.blue)
             }
-
-            Button(isJoiningExisting ? "Switch to Create" : "Switch to Join") {
-                isJoiningExisting.toggle()
-            }
-            .foregroundColor(.blue)
+            .padding()
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.white, Color.blue.opacity(0.2)]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+            )
         }
-        .padding()
+        
     }
 
     private func createHousehold() {
