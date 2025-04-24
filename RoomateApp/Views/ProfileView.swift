@@ -23,6 +23,8 @@ struct ProfileView: View {
     
     @State private var notifications = true
     @State private var currentUser = users[0]
+    @EnvironmentObject var authenticationManager: AuthManager
+    
     var body: some View {
         ZStack{
             backgroundGradient
@@ -70,8 +72,11 @@ struct ProfileView: View {
                                 Text(user.name)
                             }
                         }
-                        Text("Logout")
-                            .foregroundStyle(Color.red)
+                        Button("Log Out") {
+                            // Log out action
+                            authenticationManager.logout()
+                        }
+                        .foregroundStyle(Color.red)
                         Section("Version"){
                             Text("1.0")
                         }
@@ -91,4 +96,5 @@ struct ProfileView: View {
 
 #Preview {
     ProfileView()
+        .environmentObject(AuthManager())
 }

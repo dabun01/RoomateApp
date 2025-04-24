@@ -6,12 +6,23 @@
 //
 
 
+// need to add database connections
+// need to add login state
+// need to add user state
+
+
+
+//  ContentView.swift
+//  RoomateApp
+//
+//  Created by David Abundis & Chris Nastasi on 3/11/25.
+//
+
 import SwiftUI
 
 struct ContentView: View {
     @State private var showProfileSettings: Bool = false
-    @State var currentUser = users[0]
-    @State var isLoggedIn: Bool = false
+    @EnvironmentObject var authManager: AuthManager
 
     var body: some View {
         NavigationStack {
@@ -33,64 +44,111 @@ struct ContentView: View {
                             .padding(.trailing)
                     }
                 }
+                Divider()
+                    .padding(.horizontal)
                 .sheet(isPresented: $showProfileSettings) {
-                    if isLoggedIn {
+                    if authManager.isLoggedIn {
                         ProfileView()
                     } else {
                         LoginView()
                     }
                 }
 
-                // Welcome and points
-                VStack(spacing: 10) {
-                    HStack {
-                        Text("Welcome, \(currentUser.name)!")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                        Spacer()
-                        Text("\(currentUser.points) pts")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                    }
-                    .padding(.horizontal)
-                }
-                // Chore list
-                ScrollView {
-                    ChoreListView(onChoreCompleted: completeChore)
-                }
+                if authManager.isLoggedIn, let currentUser = authManager.currentUser {
+                    // Content for logged-in users
 
-                // Roomies section
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Your Roomies")
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .padding(.horizontal)
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: 10) {
-                            ForEach(users, id: \.name) { user in
-                                UserRow(user: user)
-                            }
+                    // Welcome and points
+                    VStack(spacing: 10) {
+                        HStack {
+                            Text("Welcome, \(currentUser.name)!")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                            Spacer()
+                            Text("\(currentUser.points) pts")
+                                .font(.title2)
+                                .fontWeight(.medium)
                         }
                         .padding(.horizontal)
                     }
+
+                    // Chore list
+                    ScrollView {
+                        ChoreListView(onChoreCompleted: { points in
+                            authManager.updateUserPoints(additionalPoints: points)
+                        })
+                    }
+
+                    NavigationLink(destination: ChorePoolView()) {
+                        Text("All Chores")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
+                    .padding(.horizontal)
+
+                    // Roomies section
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("Your Roomies")
+                            .font(.title2)
+                            .fontWeight(.medium)
+                            .padding(.horizontal)
+
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            LazyHStack(spacing: 10) {
+                                ForEach(users, id: \.name) { user in
+                                    UserRow(user: user)
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                    .padding(.vertical, 20)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                } else {
+                    // Content for non-logged in users
+                    VStack(spacing: 30) {
+                        Image("app-logo") // Replace with your app logo or an appropriate image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 150, height: 150)
+                            .padding(.top, 50)
+
+                        Text("Welcome to Responsible Roomies")
+                            .font(.title2)
+                            .fontWeight(.bold)
+
+                        Text("Manage chores and keep track of responsibilities with your roommates")
+                            .font(.body)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+
+                        Button(action: {
+                            showProfileSettings = true
+                        }) {
+                            Text("Sign In")
+                                .frame(width: 200)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                        .padding(.top, 20)
+
+                        Spacer()
+                    }
+                    .padding()
                 }
-                .padding(.vertical, 20)
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(12)
-                .padding(.horizontal)
             }
             .padding(.vertical)
             .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color.blue.opacity(0.2)]), startPoint: .top, endPoint: .bottom))
         }
     }
-    func completeChore(points: Int) {
-            currentUser.points += points
-        }
-    }
+}
 
-    
-    
 struct UserRow: View {
     let user: User
 
@@ -121,6 +179,19 @@ struct UserRow: View {
         .padding()
     }
 }
+
+// Ensure the AuthManager has necessary functionality:
+extension AuthManager {
+    func updateUserPoints(additionalPoints: Int) {
+        if var user = currentUser {
+            user.points += additionalPoints
+            self.currentUser = user
+            self.objectWillChange.send()
+        }
+    }
+}
+
 #Preview {
     ContentView()
+        .environmentObject(AuthManager())
 }

@@ -22,6 +22,7 @@ struct AddChoreView: View {
                     Stepper(value: $points, in: 0...100, step: 5) {
                         Text("Points: \(points)")
                     }
+                    // add assignment here
                 }
             }
             .navigationTitle("Add Chore")

@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct RoomateAppApp: App {
+    @StateObject var authManager = AuthManager() // Create an instance of AuthManager
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(authManager) // Pass the AuthManager to the environment
         }
     }
 }

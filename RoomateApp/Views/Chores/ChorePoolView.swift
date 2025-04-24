@@ -10,12 +10,14 @@ import SwiftUI
 struct ChorePoolView: View {
     @State private var completedItems: [String: Bool] = [:]
     @State private var isPresentingAddChore = false
+    @State private var choreManager = ChoreManager()
     @State private var chores: [(item: String, name: String, points: Int)] = [
         ("Wash Dishes", "David", 10),
         ("Sweep The Living Room", "Chris", 20),
         ("Clean Counters", "Ruben", 15),
         ("Deep Clean Bathroom", "You", 25)
     ]
+//    @State private var chores:
 
     var body: some View {
         NavigationView {
@@ -59,6 +61,7 @@ struct ChorePoolView: View {
                     chores.append((item: chore, name: "You", points: points))
                 }
             }
+            
         }
     }
 }

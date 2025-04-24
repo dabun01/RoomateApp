@@ -2,10 +2,13 @@
 //  ChoreManager.swift
 //  RoomateApp
 //
-//  Created by David Abundis on 3/13/25.
+//  Created by David Abundis & Chris Nastasi on 3/13/25.
 //
 
+//  This file is used to manage the chores in the application.
+
 import Foundation
+import Observation
 
 // Define the Chore structure
 struct Chore: Identifiable, Codable {

@@ -14,7 +14,7 @@ struct ChoreListView: View {
     let names = ["David", "Chris", "Ruben", "You", "You"]
     let points = [10, 20, 15, 25, 10]
     var onChoreCompleted: (Int) -> Void
-    
+
     var body: some View {
         NavigationView {
             let filteredChores = Array(zip(chores.indices, zip(chores, names)))
@@ -50,7 +50,6 @@ struct ChoreListView: View {
                     }
                 }
             }
-
         }
     }
 }
