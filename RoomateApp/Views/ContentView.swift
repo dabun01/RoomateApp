@@ -23,7 +23,8 @@ import SwiftUI
 struct ContentView: View {
     @State private var showProfileSettings: Bool = false
     @EnvironmentObject var authManager: AuthManager
-
+    @StateObject var choreManager = ChoreManager()
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
@@ -89,12 +90,12 @@ struct ContentView: View {
                             
                         }
 
-                        ChoreListView(onChoreCompleted: { points in
+                        PersonalChoresList(choreManager: choreManager) { points in
                             authManager.updateUserPoints(additionalPoints: points)
-                        })
+                        }
                     }
 
-                    NavigationLink(destination: ChorePoolView()) {
+                    NavigationLink(destination: ChorePoolView().environmentObject(choreManager)) {
                         Text("All Chores")
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -162,6 +163,61 @@ struct ContentView: View {
             }
             .padding(.vertical)
             .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color.blue.opacity(0.2)]), startPoint: .top, endPoint: .bottom))
+        }
+    }
+}
+
+// New component to display personal chores
+struct PersonalChoresList: View {
+    @ObservedObject var choreManager: ChoreManager
+    @EnvironmentObject var authManager: AuthManager
+    var onChoreCompleted: (Int) -> Void
+    
+    var body: some View {
+        let personalChores = choreManager.chores.filter { chore in
+            // Show chores assigned to current user (displaying "You" in the UI)
+          authManager.currentUser?.name == chore.assignedTo
+        }
+        
+        if personalChores.isEmpty {
+            Text("No chores assigned to you")
+                .padding()
+                .foregroundColor(.secondary)
+        } else {
+            ForEach(personalChores) { chore in
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text(chore.title)
+                        Text("You")  // Show "You" instead of the username
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                        Text("Points: \(chore.points)")
+                            .font(.footnote)
+                            .foregroundColor(.blue)
+                    }
+                    Spacer()
+                    Button(action: {
+                        if let choreIndex = choreManager.chores.firstIndex(where: { $0.id == chore.id }) {
+                            let pointsDelta = choreManager.chores[choreIndex].isCompleted ? -chore.points : chore.points
+                            _ = choreManager.completeChore(id: chore.id)
+                            onChoreCompleted(pointsDelta)
+                        }
+                    }) {
+                        Text(chore.isCompleted ? "Complete" : "Incomplete")
+                            .font(.caption)
+                            .padding(5)
+                            .background(chore.isCompleted ? Color.green : Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(5)
+                    }
+                }
+                .padding()
+                .background(Color.white)
+                .cornerRadius(10)
+                .shadow(radius: 1)
+                .padding(.horizontal)
+                .padding(.vertical, 5)
+            }
         }
     }
 }

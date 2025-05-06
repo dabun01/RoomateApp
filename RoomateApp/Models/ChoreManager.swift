@@ -17,6 +17,7 @@ struct Chore: Identifiable, Codable {
     var isCompleted: Bool = false
     var dueDate: Date?
     var points: Int
+    var assignedTo: String = "Unassigned"
     
     // Method to toggle completion status
     mutating func toggleCompletion() {
@@ -54,8 +55,8 @@ class ChoreManager: ObservableObject {
     }
     
     // Add a new chore
-    func addChore(title: String, points: Int) {
-        let newChore = Chore(title: title, points: points)
+    func addChore(title: String, points: Int, assignedTo: String) {
+        let newChore = Chore(title: title, points: points, assignedTo: assignedTo)
         chores.append(newChore)
     }
     

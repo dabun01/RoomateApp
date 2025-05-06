@@ -11,9 +11,11 @@ struct AddChoreView: View {
     @Environment(\.dismiss) var dismiss
     @State private var choreName: String = ""
     @State private var points: Int = 0
-
-    var onSave: (String, Int) -> Void
-
+    @State private var assignedUserName: String = "Unassigned"
+    @EnvironmentObject var authManager: AuthManager
+    
+    var onSave: (String, Int, String) -> Void
+    
     var body: some View {
         NavigationView {
             Form {
@@ -22,7 +24,17 @@ struct AddChoreView: View {
                     Stepper(value: $points, in: 0...100, step: 5) {
                         Text("Points: \(points)")
                     }
-                    // add assignment here
+                    Picker("Assign To", selection: $assignedUserName) {
+                        Text("Unassigned").tag("Unassigned")
+                        
+                        ForEach(authManager.allUsers) { user in
+                            if authManager.currentUser?.id == user.id {
+                                Text("You").tag(user.name)
+                            }else{
+                                Text(user.name).tag(user.name)
+                            }
+                        }
+                    }
                 }
             }
             .navigationTitle("Add Chore")
@@ -35,10 +47,15 @@ struct AddChoreView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         if !choreName.isEmpty {
-                            onSave(choreName, points) // Pass the chore back to the parent view
+                            onSave(choreName, points, assignedUserName) // Pass the chore back to the parent view
                             dismiss()
                         }
                     }
+                }
+            }
+            .onAppear {
+                if let currentUser = authManager.currentUser {
+                    assignedUserName = currentUser.name
                 }
             }
         }
@@ -47,7 +64,8 @@ struct AddChoreView: View {
 
 
 #Preview {
-    AddChoreView { chore, points in
-        print("Chore: \(chore), Points: \(points)")
+    AddChoreView { chore, points, assignedTo in
+        print("Chore: \(chore), Points: \(points), Assigned To: \(assignedTo)")
     }
+    .environmentObject(AuthManager(autoLogin: true))
 }

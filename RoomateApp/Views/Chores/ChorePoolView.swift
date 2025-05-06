@@ -8,41 +8,48 @@
 import SwiftUI
 
 struct ChorePoolView: View {
-    @State private var completedItems: [String: Bool] = [:]
     @State private var isPresentingAddChore = false
-    @State private var choreManager = ChoreManager()
-    @State private var chores: [(item: String, name: String, points: Int)] = [
-        ("Wash Dishes", "David", 10),
-        ("Sweep The Living Room", "Chris", 20),
-        ("Clean Counters", "Ruben", 15),
-        ("Deep Clean Bathroom", "You", 25)
-    ]
-//    @State private var chores:
-
+    @EnvironmentObject var authManager: AuthManager
+    @StateObject var choreManager = ChoreManager()
+    
     var body: some View {
         NavigationView {
-            List(chores.indices, id: \.self) { index in
-                let chore = chores[index]
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(chore.item)
-                        Text(chore.name)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        Text("Points: \(chore.points)")
-                            .font(.footnote)
-                            .foregroundColor(.blue)
+            List {
+                ForEach(choreManager.chores) { chore in
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(chore.title)
+                            if let currentUser = authManager.currentUser, chore.assignedTo == currentUser.name {
+                                Text("You")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            } else {
+                                Text(chore.assignedTo)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                            Text("Points: \(chore.points)")
+                                .font(.footnote)
+                                .foregroundColor(.blue)
+                        }
+                        Spacer()
+                        Button(action: {
+                            _ = choreManager.completeChore(id: chore.id)
+                        }) {
+                            Text(chore.isCompleted ? "Complete" : "Incomplete")
+                                .font(.caption)
+                                .padding(5)
+                                .background(chore.isCompleted ? Color.green : Color.red)
+                                .foregroundColor(.white)
+                                .cornerRadius(5)
+                        }
                     }
-                    Spacer()
-                    Button(action: {
-                        completedItems[chore.item] = !(completedItems[chore.item] ?? false)
-                    }) {
-                        Text(completedItems[chore.item] ?? false ? "Complete" : "Incomplete")
-                            .font(.caption)
-                            .padding(5)
-                            .background(completedItems[chore.item] ?? false ? Color.green : Color.red)
-                            .foregroundColor(.white)
-                            .cornerRadius(5)
+                }
+                .onDelete { indexSet in
+                    for index in indexSet {
+                        if index < choreManager.chores.count {
+                            choreManager.removeChore(id: choreManager.chores[index].id)
+                        }
                     }
                 }
             }
@@ -57,15 +64,16 @@ struct ChorePoolView: View {
                 }
             }
             .sheet(isPresented: $isPresentingAddChore) {
-                AddChoreView { chore, points in
-                    chores.append((item: chore, name: "You", points: points))
+                AddChoreView { chore, points, assignedTo in
+                    choreManager.addChore(title: chore, points: points, assignedTo: assignedTo)
                 }
+                .environmentObject(authManager)
             }
-            
         }
     }
 }
 
 #Preview {
     ChorePoolView()
+        .environmentObject(AuthManager(autoLogin: true))
 }
