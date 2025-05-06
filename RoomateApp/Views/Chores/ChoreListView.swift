@@ -16,6 +16,7 @@ struct ChoreListView: View {
     var onChoreCompleted: (Int) -> Void
 
     var body: some View {
+        
         NavigationView {
             let filteredChores = Array(zip(chores.indices, zip(chores, names)))
                             .filter { $0.1.1 == "You" }

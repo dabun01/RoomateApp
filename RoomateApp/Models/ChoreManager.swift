@@ -24,56 +24,65 @@ struct Chore: Identifiable, Codable {
     }
 }
 
-// Class to manage the chores list
-@Observable
-class ChoreManager {
-    // Mutable array of chores
-    var chores = [Chore](){
-        didSet{
-            if let encode = try? JSONEncoder().encode(chores){
-                UserDefaults.standard.set(encode, forKey: "chores")
+// Class to manage the chores list made it an ObservableObject to allow for SwiftUI updates\
+// so it all refrences the same object
+
+class ChoreManager: ObservableObject {
+    @Published var chores: [Chore] = [] {
+        didSet {
+            if let encoded = try? JSONEncoder().encode(chores) {
+                UserDefaults.standard.set(encoded, forKey: "chores")
             }
         }
     }
     
     init() {
-        if let savedChore = UserDefaults.standard.data(forKey: "chores"){
-            if let decodedChore = try? JSONDecoder().decode([Chore].self, from: savedChore){
-                chores = decodedChore
+        if let savedChores = UserDefaults.standard.data(forKey: "chores") {
+            if let decodedChores = try? JSONDecoder().decode([Chore].self, from: savedChores) {
+                chores = decodedChores
                 return
             }
         }
-        chores = []
+        
+        // Default chores if none were loaded
+        chores = [
+            Chore(title: "Wash Dishes", points: 10),
+            Chore(title: "Sweep The Living Room", points: 20),
+            Chore(title: "Clean Counters", points: 15),
+            Chore(title: "Deep Clean Bathroom", points: 25)
+        ]
     }
     
-    // Add a new chore to the list
-    func addChore(title: String, dueDate: Date? = nil) {
-        let newChore = Chore(title: title, isCompleted: false, dueDate: dueDate, points: 10)
+    // Add a new chore
+    func addChore(title: String, points: Int) {
+        let newChore = Chore(title: title, points: points)
         chores.append(newChore)
     }
     
-    // Remove a chore by its ID
+    // Remove a chore
     func removeChore(id: UUID) {
         if let index = chores.firstIndex(where: { $0.id == id }) {
             chores.remove(at: index)
         }
     }
     
-    // Toggle completion status of a chore
-    func toggleChoreCompletion(id: UUID) {
+    // Complete a chore and return points
+    func completeChore(id: UUID) -> Int {
         if let index = chores.firstIndex(where: { $0.id == id }) {
             var chore = chores[index]
             chore.toggleCompletion()
             chores[index] = chore
+            return chore.points
         }
+        return 0
     }
     
-    // Get all incomplete chores
+    // Get incomplete chores
     func getIncompleteChores() -> [Chore] {
         return chores.filter { !$0.isCompleted }
     }
     
-    // Get all completed chores
+    // Get completed chores
     func getCompletedChores() -> [Chore] {
         return chores.filter { $0.isCompleted }
     }

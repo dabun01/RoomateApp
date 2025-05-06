@@ -7,14 +7,6 @@
 
 import SwiftUI
 
-struct VLine: Shape {
-    func path(in rect: CGRect) -> Path {
-        Path { path in
-            path.move(to: CGPoint(x: rect.midX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
-        }
-    }
-}
 
 struct ProfileView: View {
     let backgroundGradient = LinearGradient(
@@ -31,24 +23,21 @@ struct ProfileView: View {
             VStack {
                 HStack{
                     VStack{
+                        
                         Image("profilePicture")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .clipShape(.circle)
                             .frame(width: 125, height: 125)
                             .padding()
-                        Text("\(currentUser.name)")
-                            .font(.largeTitle)
-                            .foregroundStyle(Color.white)
+                       
                     }
-                    VLine().stroke(style: StrokeStyle(lineWidth: 2, dash: [5]))
-                        .frame(width: 1, height: 180)
-                        .foregroundStyle(Color.white)
-                        .padding(.vertical)
                     
                     VStack{
-                        Text("\(currentUser.points)")
-                        Text("PTS")
+                        Text("\(currentUser.name)")
+                            .font(.title)
+                            .foregroundStyle(Color.white)
+                        Text("\(currentUser.points) PTS")
                     }
                     .font(.title)
                     .foregroundStyle(Color.white)

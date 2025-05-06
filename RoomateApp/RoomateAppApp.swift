@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct RoomateAppApp: App {
-    @StateObject var authManager = AuthManager() // Create an instance of AuthManager
+    @StateObject var authManager = AuthManager(autoLogin: true) // Create an instance of AuthManager
 
     var body: some Scene {
         WindowGroup {

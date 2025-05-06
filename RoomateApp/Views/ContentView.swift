@@ -63,16 +63,32 @@ struct ContentView: View {
                             Text("Welcome, \(currentUser.name)!")
                                 .font(.title2)
                                 .fontWeight(.medium)
+                                .padding(.leading)
                             Spacer()
                             Text("\(currentUser.points) pts")
                                 .font(.title2)
                                 .fontWeight(.medium)
+                                .padding(.trailing)
                         }
+                        HStack {
+                            Spacer()
+                            
+                            
+                        }
+                        
                         .padding(.horizontal)
                     }
 
                     // Chore list
                     ScrollView {
+                        VStack() {
+                            Text(Date.now, style: .date)
+                                .font(.title3)
+                                .foregroundColor(.black)
+                            Spacer()
+                            
+                        }
+
                         ChoreListView(onChoreCompleted: { points in
                             authManager.updateUserPoints(additionalPoints: points)
                         })
@@ -97,8 +113,9 @@ struct ContentView: View {
 
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack(spacing: 10) {
-                                ForEach(users, id: \.name) { user in
-                                    UserRow(user: user)
+                                // Display each user in a horizontal list
+                                ForEach(authManager.allUsers, id: \.name) { user in
+                                            UserRow(user: user)
                                 }
                             }
                             .padding(.horizontal)
@@ -180,18 +197,24 @@ struct UserRow: View {
     }
 }
 
-// Ensure the AuthManager has necessary functionality:
-extension AuthManager {
-    func updateUserPoints(additionalPoints: Int) {
-        if var user = currentUser {
-            user.points += additionalPoints
-            self.currentUser = user
-            self.objectWillChange.send()
-        }
-    }
-}
+//moved to AuthManager.swift
+//// Ensure the AuthManager has necessary functionality:
+//extension AuthManager {
+//    func updateUserPoints(additionalPoints: Int) {
+//        if var user = currentUser {
+//            user.points += additionalPoints
+//            self.currentUser = user
+//            
+//            // Also update the user in the allUsers array
+//            if let index = allUsers.firstIndex(where: { $0.name == user.name }) {
+//                allUsers[index].points = user.points
+//            }
+//            self.objectWillChange.send()
+//        }
+//    }
+//}
 
 #Preview {
     ContentView()
-        .environmentObject(AuthManager())
+        .environmentObject(AuthManager(autoLogin: true))
 }

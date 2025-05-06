@@ -14,6 +14,7 @@ import Foundation
 class AuthManager: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var currentUser: User? = nil
+    @Published var allUsers: [User] = [] // This should be replaced with a database call
 
     init() {
         // First try to load any existing user
@@ -38,6 +39,28 @@ class AuthManager: ObservableObject {
             } catch {
                 print("Failed to decode user data: \(error.localizedDescription)")
                 UserDefaults.standard.removeObject(forKey: "currentUser")
+            }
+        }
+    }
+    private func createTestUsers() {
+        self.allUsers = [
+            User(name: "David", profilePicture: "profilePicture", points: 50, color: "red"),
+            User(name: "Chris", profilePicture: "imageDog", points: 30, color: "green"),
+            User(name: "Ruben", profilePicture: "profilePicture", points: 20, color: "blue"),
+            User(name: "Manny", profilePicture: "profilePicture", points: 40, color: "orange")
+        ]
+    }
+    
+    convenience init(autoLogin: Bool = false) {
+        self.init()
+        if autoLogin {
+            self.isLoggedIn = true
+            // Create test user data
+            createTestUsers()
+            
+            // Set the first user as current user
+            if !self.allUsers.isEmpty {
+                self.currentUser = self.allUsers[0]
             }
         }
     }
@@ -93,6 +116,19 @@ class AuthManager: ObservableObject {
             } catch {
                 print("Failed to save user: \(error.localizedDescription)")
             }
+        }
+    }
+    // Function to update user points
+    func updateUserPoints(additionalPoints: Int) {
+        if var user = currentUser {
+            user.points += additionalPoints
+            self.currentUser = user
+            
+            // Also update the user in the allUsers array
+            if let index = allUsers.firstIndex(where: { $0.name == user.name }) {
+                allUsers[index].points = user.points
+            }
+            self.objectWillChange.send()
         }
     }
 }
