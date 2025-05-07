@@ -16,16 +16,46 @@ class AuthManager: ObservableObject {
     @Published var currentUser: User? = nil
     @Published var allUsers: [User] = [] // This should be replaced with a database call
 
-    init() {
-        // First try to load any existing user
-//        loadSavedUser()
+
+    init(autologin: Bool = false) {
+        if autologin != true {
+
+            // comment this out if not working properly when autologin is on
+            Task {
+                let session = try await AuthManagerAW.shared.getSession()
+                if session.current != false {
+                    print("Session already active")
+                    self.isLoggedIn = true
+                    createAndSaveTestUser()
+                    self.currentUser = UserDefaults.standard.object(forKey: "currentUser") as? User
+                } else {
+                    self.isLoggedIn = false
+                    self.currentUser = nil
+                }
+            }
+        }
 
         // For testing only - uncomment to reset to test user
-         createAndSaveTestUser()
+//         createAndSaveTestUser()
 
         // For Testing Only -- create a household
         let household = Household(name: "Roommates", members: users)
         print("Household created: \(household.name) with members: \(household.members.map { $0.name })")
+    }
+
+    // for testing only
+    convenience init(autoLogin: Bool = false) {
+        self.init()
+        if autoLogin {
+            self.isLoggedIn = true
+            // Create test user data
+            createTestUsers()
+
+            // Set the first user as current user
+            if !self.allUsers.isEmpty {
+                self.currentUser = self.allUsers[0]
+            }
+        }
     }
 
     private func loadSavedUser() {
@@ -50,20 +80,7 @@ class AuthManager: ObservableObject {
             User(name: "Manny", profilePicture: "profilePicture", points: 40, color: "orange")
         ]
     }
-    
-    convenience init(autoLogin: Bool = false) {
-        self.init()
-        if autoLogin {
-            self.isLoggedIn = true
-            // Create test user data
-            createTestUsers()
-            
-            // Set the first user as current user
-            if !self.allUsers.isEmpty {
-                self.currentUser = self.allUsers[0]
-            }
-        }
-    }
+
 
     private func createAndSaveTestUser() {
         let testUser = User(
@@ -89,6 +106,7 @@ class AuthManager: ObservableObject {
     }
 
     func login(user: User) {
+//        Appwrite.shared.user = user
         self.currentUser = user
         self.isLoggedIn = true
         saveCurrentUser()
@@ -104,6 +122,14 @@ class AuthManager: ObservableObject {
         self.currentUser = nil
         self.isLoggedIn = false
         UserDefaults.standard.removeObject(forKey: "currentUser")
+        Task {{
+            do {
+                try await AuthManagerAW.shared.signOut()
+                print("User signed out successfully")
+            } catch {
+                print("Error signing out: \(error.localizedDescription)")
+            }
+        }}
     }
 
     private func saveCurrentUser() {
@@ -132,46 +158,3 @@ class AuthManager: ObservableObject {
         }
     }
 }
-//// First, create an AuthManager class to handle login state
-//class AuthManager: ObservableObject {
-//    @Published var isLoggedIn: Bool = false
-//    @Published var currentUser: User? = nil
-//
-//    init() {
-//        let testUser = User(
-//            name: "David",
-//            email: "david@rmapp.com", profilePicture: "profilePicture",
-//            points: 10,
-//            color: "red"
-//        )
-////        UserDefaults.standard.set(try? JSONEncoder().encode(testUser), forKey: "currentUser")
-//        print(testUser)
-//        // Check if the user is already logged in
-////        if let userData = UserDefaults.standard.data(forKey: "currentUser"),
-////           let user = try? JSONDecoder().decode(User.self, from: userData) {
-////            self.currentUser = user
-////            self.isLoggedIn = true
-////        } else {
-////            self.isLoggedIn = false
-////        }
-//    }
-//
-//    func login(user: User) {
-//        self.currentUser = user
-//        self.isLoggedIn = true
-//    }
-//
-//    func signUp(user: User) {
-//        // Here you would typically handle user sign-up logic
-//        self.currentUser = user
-//        self.isLoggedIn = true
-//        UserDefaults.standard.set(user, forKey: "currentUser")
-//
-//    }
-//
-//    func logout() {
-//        self.currentUser = nil
-//        self.isLoggedIn = false
-//    }
-//
-//}

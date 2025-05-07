@@ -61,14 +61,19 @@ struct ProfileView: View {
                                 Text(user.name)
                             }
                         }
-                        Button("Log Out") {
+                        Button("Log Out"){
                             // Log out action
+                            Task {
+                                try await AuthManagerAW.shared.signOut()
+                            }
                             authenticationManager.logout()
                         }
                         .foregroundStyle(Color.red)
                         Section("Version"){
                             Text("1.0")
                         }
+                        
+
                     }
                     .navigationTitle("Settings").navigationBarTitleDisplayMode(.automatic)
                 }

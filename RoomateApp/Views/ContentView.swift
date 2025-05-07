@@ -24,7 +24,7 @@ struct ContentView: View {
     @State private var showProfileSettings: Bool = false
     @EnvironmentObject var authManager: AuthManager
     @StateObject var choreManager = ChoreManager()
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
@@ -36,6 +36,7 @@ struct ContentView: View {
                         .padding(.leading)
                     Spacer()
                     Button(action: {
+                        print(authManager.isLoggedIn)
                         showProfileSettings.toggle()
                     }) {
                         Image(systemName: "person.circle.fill")
@@ -252,23 +253,6 @@ struct UserRow: View {
         .padding()
     }
 }
-
-//moved to AuthManager.swift
-//// Ensure the AuthManager has necessary functionality:
-//extension AuthManager {
-//    func updateUserPoints(additionalPoints: Int) {
-//        if var user = currentUser {
-//            user.points += additionalPoints
-//            self.currentUser = user
-//            
-//            // Also update the user in the allUsers array
-//            if let index = allUsers.firstIndex(where: { $0.name == user.name }) {
-//                allUsers[index].points = user.points
-//            }
-//            self.objectWillChange.send()
-//        }
-//    }
-//}
 
 #Preview {
     ContentView()

@@ -10,20 +10,6 @@
 import Foundation
 import Observation
 
-// Define the Chore structure
-struct Chore: Identifiable, Codable {
-    var id = UUID()
-    var title: String
-    var isCompleted: Bool = false
-    var dueDate: Date?
-    var points: Int
-    var assignedTo: String = "Unassigned"
-    
-    // Method to toggle completion status
-    mutating func toggleCompletion() {
-        isCompleted.toggle()
-    }
-}
 
 // Class to manage the chores list made it an ObservableObject to allow for SwiftUI updates\
 // so it all refrences the same object
