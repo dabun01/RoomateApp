@@ -157,4 +157,12 @@ class AuthManager: ObservableObject {
             self.objectWillChange.send()
         }
     }
+    
+    func updateUserName(_ newName: String) {
+        guard var updatedUser = currentUser else { return }
+        updatedUser.name = newName
+        currentUser = updatedUser
+    }
+    
+    
 }

@@ -74,8 +74,6 @@ struct ContentView: View {
                         }
                         HStack {
                             Spacer()
-                            
-                            
                         }
                         
                         .padding(.horizontal)
@@ -165,6 +163,19 @@ struct ContentView: View {
             .padding(.vertical)
             .background(LinearGradient(gradient: Gradient(colors: [Color.white, Color.blue.opacity(0.2)]), startPoint: .top, endPoint: .bottom))
         }
+        .environmentObject(choreManager)
+    }
+}
+
+// This is a wrapper view that ensures we don't create a new ChoreManager
+struct ChorePoolLink: View {
+    @EnvironmentObject var choreManager: ChoreManager
+    @EnvironmentObject var authManager: AuthManager
+    
+    var body: some View {
+        ChorePoolView()
+            .environmentObject(choreManager)
+            .environmentObject(authManager)
     }
 }
 

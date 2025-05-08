@@ -1,5 +1,5 @@
 {
-  "originHash" : "b32cd2b3068b5e1b853d48245be465d6df4c2cf35c74ebfaf7af0be3d364c985",
+  "originHash" : "a7a101a0a3e34d7202f590cd0087e2491271c585c94bdd00db87cb05b4091631",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -11,12 +11,12 @@
       }
     },
     {
-      "identity" : "sdk-for-apple",
+      "identity" : "sdk-for-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/appwrite/sdk-for-apple",
+      "location" : "https://github.com/appwrite/sdk-for-swift",
       "state" : {
-        "revision" : "362d8b32c5e807ff31d3a95619d1f5ce83296d69",
-        "version" : "9.0.1"
+        "revision" : "b9559021eb2b925a48c265818c294a2fdc7b5aa1",
+        "version" : "9.0.0"
       }
     },
     {

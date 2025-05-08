@@ -40,6 +40,14 @@ class ChoreManager: ObservableObject {
         ]
     }
     
+    func updateChore(id: UUID, title: String, points: Int, assignedTo: String) {
+        if let index = chores.firstIndex(where: { $0.id == id }) {
+            chores[index].title = title
+            chores[index].points = points
+            chores[index].assignedTo = assignedTo
+        }
+    }
+    
     // Add a new chore
     func addChore(title: String, points: Int, assignedTo: String) {
         let newChore = Chore(title: title, points: points, assignedTo: assignedTo)

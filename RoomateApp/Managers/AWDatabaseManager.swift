@@ -30,7 +30,7 @@ class AWDatabaseManager {
         
         let document = try JSONEncoder().encode(household)
         
-        let createdDocument = try await database.createDocument(
+        _ = try await database.createDocument(
             databaseId: "681aafe600",
             collectionId: collectionId,
             documentId: documentId,

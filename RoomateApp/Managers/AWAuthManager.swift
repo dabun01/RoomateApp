@@ -14,6 +14,10 @@ import AppwriteModels
 class AuthManagerAW {
     private let client: Client
     private let account: Account
+    
+    // User state
+    @Published var currentUser: User?
+    @Published var isLoggedIn: Bool = false
 
     // Singleton instance
     static let shared = AuthManagerAW()
@@ -27,19 +31,17 @@ class AuthManagerAW {
         }
         // Initialize Appwrite client
         client = Client()
-            .setEndpoint(endpoint_url) // Replace with your Appwrite endpoint
-            .setProject(project_id) // Replace with your project ID
+            .setEndpoint("https://fra.cloud.appwrite.io/v1") // Replace with your Appwrite endpoint
+            .setProject("681aafe600208c1254d4") // Replace with your project ID
 
         // Initialize Account
         account = Account(client)
-
-
     }
 
     // Sign up with email and password
     func signUp(email: String, password: String, name: String) async throws {
         
-        let user = try await account.create(userId: ID.unique(), email: email, password: password, name: name)
+        _ = try await account.create(userId: ID.unique(), email: email, password: password, name: name)
     }
 
     // Sign in with email and password
@@ -64,8 +66,15 @@ class AuthManagerAW {
 
     // Sign out
     func signOut() async throws {
-        try await account.deleteSession(sessionId: "current")
-        print("User signed out")
+        // Properly handle the return value
+        let _ = try await account.deleteSession(sessionId: "current")
+        
+        // Clear local user data
+        UserDefaults.standard.removeObject(forKey: "sessionId")
+        isLoggedIn = false
+        currentUser = nil
+        
+        print("User signed out successfully")
     }
 
     // Check if user is authenticated
